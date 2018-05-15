@@ -68,7 +68,7 @@ genPCPlots <- function(mat, cluster){
 genBiPCPlot <- function(mat, cluster){
   fviz_cluster(object = list(data = mat, 
                              cluster = cluster),
-               main = "First Two PCs and Cluster Assignments")
+               main = "Clustered PC1 and PC2")
 }
 
 
