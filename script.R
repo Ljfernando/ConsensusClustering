@@ -1,7 +1,3 @@
-library(flexdashboard)
-library(plotly)
-library(shiny)
-
 library(magrittr)
 library(d3heatmap)
 
@@ -114,8 +110,6 @@ consClustering <- function(X, K, func, nrs, ...){
               clusterings = hier.clust))
 }
 
-out <- consClustering(dataset, K = 5, func = "kmeans", nrs = 20,
-                     method = "euclidean")
 # 
 # genBiPCPlot(dataset, out$clusterings)
 # clustheatmap(out$cons.mat)
