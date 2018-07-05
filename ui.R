@@ -4,10 +4,10 @@ library(d3heatmap)
 
 # Define UI for application that draws a histogram
 shinyUI(
-  navbarPage("Consensus Clustering",
+  navbarPage("Consensus Clustering", id = "algorithm",
              
     # ~~~~~~~ K MEANS ~~~~~~
-    tabPanel("Kmeans",
+    tabPanel("Kmeans", value = 'kmeans',
   
     # Application title
     titlePanel("Kmeans Clustering"),
@@ -37,21 +37,26 @@ shinyUI(
       
       mainPanel(
         tabsetPanel(type = "tabs",
-                    tabPanel("PCA",         
-                             plotOutput("kmeans_pca",  height = "600px",
+                    tabPanel(title = "PCA", value = "what",         
+                             plotOutput("kmeans_pca",  height = "500px",
                                         dblclick = "plot_dblclick",
                                         brush = brushOpts(id = "plot_brush",
                                                           resetOnNew = TRUE))
                     ),
-                    tabPanel("Heatmap",
-                             d3heatmapOutput("kmeans_hm", height = "600px"))
+                    tabPanel(title = "Heatmap",
+                             d3heatmapOutput("kmeans_hm", height = "500px")),
+                    tabPanel(title = "ClusterCons",
+                             plotOutput("kmeans_cc", height = "500px")),
+                    tabPanel(title = "ItemCons", 
+                             dataTableOutput("kmeans_ic"))
+                    
         )
       )
     )
   ),
   
   # ~~~~~ Hierarchical Clustering ~~~~~
-  tabPanel("Hclust",
+  tabPanel("Hclust", value = "hier",
            
    # Application title
    titlePanel("Hierarchical Clustering"),
@@ -84,19 +89,23 @@ shinyUI(
      mainPanel(
        tabsetPanel(type = "tabs",
                    tabPanel("PCA",         
-                            plotOutput("hier_pca",  height = "600px",
+                            plotOutput("hier_pca",  height = "500px",
                                        dblclick = "plot_dblclick",
                                        brush = brushOpts(id = "plot_brush",
                                                          resetOnNew = TRUE))
                    ),
                    tabPanel("Heatmap",
-                            d3heatmapOutput("hier_hm", height = "600px"))
+                            d3heatmapOutput("hier_hm", height = "500px")),
+                   tabPanel(title = "ClusterCons",
+                            plotOutput("hier_cc", height = "500px")),
+                   tabPanel(title = "ItemCons", 
+                            dataTableOutput("hier_ic"))
        )
      )
    )
   ),
   # ~~~~~ K Medoids ~~~~~
-  tabPanel("K Medoids",
+  tabPanel("K Medoids", value = 'kmed',
            
    # Application title
    titlePanel("K Medoids"),
@@ -126,19 +135,23 @@ shinyUI(
      mainPanel(
        tabsetPanel(type = "tabs",
                    tabPanel("PCA",         
-                            plotOutput("kmed_pca",  height = "600px",
+                            plotOutput("kmed_pca",  height = "500px",
                                        dblclick = "plot_dblclick",
                                        brush = brushOpts(id = "plot_brush",
                                                          resetOnNew = TRUE))
                    ),
                    tabPanel("Heatmap",
-                            d3heatmapOutput("kmed_hm", height = "600px"))
+                            d3heatmapOutput("kmed_hm", height = "500px")),
+                   tabPanel(title = "ClusterCons",
+                            plotOutput("kmed_cc", height = "500px")),
+                   tabPanel(title = "ItemCons", 
+                            dataTableOutput("kmed_ic"))
        )
      )
    )
   ),
   # ~~~~~ Spectral Clustering ~~~~~
-  tabPanel("Spectral",
+  tabPanel("Spectral", value = 'spec',
    
    # Application title
    titlePanel("Spectral Clustering"),
@@ -162,13 +175,17 @@ shinyUI(
      mainPanel(
          tabsetPanel(type = "tabs",
               tabPanel("PCA",         
-                  plotOutput("spec_pca",  height = "600px",
+                  plotOutput("spec_pca",  height = "500px",
                             dblclick = "plot_dblclick",
                             brush = brushOpts(id = "plot_brush",
                                               resetOnNew = TRUE))
-         ),
+              ),
               tabPanel("Heatmap",
-                  d3heatmapOutput("spec_hm", height = "600px"))
+                  d3heatmapOutput("spec_hm", height = "500px")),
+              tabPanel(title = "ClusterCons",
+                       plotOutput("spec_cc", height = "500px")),
+              tabPanel(title = "ItemCons", 
+                       dataTableOutput("spec_ic"))
        )
      )
    )

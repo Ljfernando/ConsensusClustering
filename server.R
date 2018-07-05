@@ -27,64 +27,104 @@ shinyServer(function(input, output) {
     }
   })
   
-  output$kmeans_pca <- renderPlot({
-    consClustering(dataset, K = input$k_k, method = input$k_method,
-                   func = "kmeans", nrs = input$means_nrs)$clustering %>% 
-      genBiPCPlot(mat = dataset) + 
+  method <- reactiveValues()
+  
+  observe({
+    clust_out <- switch(input$algorithm, 
+                        kmeans = consClustering(dataset, K = input$k_k, method = input$k_method,
+                                                    func = input$algorithm, nrs = input$means_nrs),
+                        hier = consClustering(dataset, K = input$k_hier, method = input$hier_method,
+                                              linkage = input$hier_link, nrs = input$hier_nrs,
+                                              func = input$algorithm),
+                        kmed = consClustering(dataset, K = input$k_med,
+                                              func = input$algorithm, nrs = input$med_nrs,
+                                              method = input$kmed_method),
+                        spec = consClustering(dataset, K = input$k_spec,
+                                              func = input$algorithm, nrs = input$spec_nrs))
+   # PCA plot
+    method$pc <- clust_out$clustering %>% 
+      genBiPCPlot(mat = dataset) +
       coord_cartesian(xlim = ranges$x, ylim = ranges$y, expand = FALSE)
     
-  })
-  
-  output$kmeans_hm <- renderD3heatmap({
-    consClustering(dataset, K = input$k_k, method = input$k_method,
-                   nrs = input$means_nrs, func = "kmeans")$cons.mat %>% 
+    # Cluster Heatmap
+    method$hm <- clust_out$norm.mat %>% 
       d3heatmap(dendrogram = 'none', colors = "Blues")
     
+    # Cluster consensus plot
+    method$cc <- computeClustCons(clust_out$clustering, clust_out$count.mat)
+    
+    # Item consensus plot
+    method$ic <- computeItemCons(clust_out$clustering, clust_out$count.mat)
+    
+  })
+
+  output$kmeans_pca <- renderPlot({
+    method$pc
+  })
+
+  output$kmeans_hm <- renderD3heatmap({
+    method$hm
+  })
+
+  output$kmeans_cc <- renderPlot({
+    method$cc
   })
   
+  output$kmeans_ic <- renderDataTable({
+    method$ic
+  }, options = list(pageLength = 10))
+  
   output$hier_pca <- renderPlot({
-    consClustering(dataset, K = input$k_hier, method = input$hier_method,
-                   linkage = input$hier_link, nrs = input$hier_nrs, func = "hier")$clustering %>% 
-      genBiPCPlot(mat = dataset) + 
-      coord_cartesian(xlim = ranges$x, ylim = ranges$y, expand = FALSE)
-    
+    method$pc
   })
   
   output$hier_hm <- renderD3heatmap({
-    consClustering(dataset, K = input$k_hier, method = input$hier_method,
-                   linkage = input$hier_link, nrs = input$hier_nrs, func = "hier")$cons.mat %>% 
-      d3heatmap(dendrogram = 'none', colors = "Blues")
-
+    method$hm
   })
+  
+  output$hier_cc <- renderPlot({
+    method$cc
+  })
+  
+  output$hier_ic <- renderDataTable({
+    method$ic
+  }, options = list(pageLength = 10))
+  
   
   
   output$kmed_pca <- renderPlot({
-    consClustering(dataset, K = input$k_med,
-                   method = input$kmed_method, nrs = input$med_nrs,
-                   func = "kmed")$clustering %>% 
-      genBiPCPlot(mat = dataset)+ 
-      coord_cartesian(xlim = ranges$x, ylim = ranges$y, expand = FALSE)
+    method$pc
   })
   
-  output$kmed_hm <- renderD3heatmap({(
-    consClustering(dataset, K = input$k_med,
-                   func = "kmed", nrs = input$med_nrs,
-                   method = input$kmed_method)$cons.mat %>% 
-      d3heatmap(dendrogram = 'none', colors = "Blues"))
+  output$kmed_hm <- renderD3heatmap({
+    method$hm
     })
+  
+  output$kmed_cc <- renderPlot({
+    method$cc
+  })
+  
+  output$kmed_ic <- renderDataTable({
+    method$ic
+  }, options = list(pageLength = 10))
   
   
   output$spec_pca <- renderPlot({
-    consClustering(dataset, K = input$k_spec,
-                   nrs = input$spec_nrs, func = "spec")$clustering %>% 
-      genBiPCPlot(mat = dataset) +
-      coord_cartesian(xlim = ranges$x, ylim = ranges$y, expand = FALSE)
+    method$pc
   })
   
-  output$spec_hm <- renderD3heatmap({(
-    consClustering(dataset, K = input$k_spec,
-                   func = "spec", nrs = input$spec_nrs)$cons.mat %>% 
-      d3heatmap(dendrogram = 'none', colors = "Blues"))
+  output$spec_hm <- renderD3heatmap({
+    method$hm
     })
+  
+  output$spec_cc <- renderPlot({
+    method$cc
+  })
+  
+  output$spec_ic <- renderDataTable({
+    method$ic
+  }, options = list(pageLength = 10))
+  
+  
 })
 

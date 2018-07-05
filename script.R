@@ -1,5 +1,6 @@
 library(magrittr)
 library(d3heatmap)
+library(ggplot2)
 
 library(kmed) # k-medoids
 library(kernlab) # spectral clustering
@@ -83,6 +84,9 @@ consClustering <- function(X, K, func, nrs, ...){
   }
   
   n <- nrow(X)
+  # Normalized pairs divides all entries by number of iterations
+  norm_pairs <- matrix(0, nrow = n, ncol = n, dimnames = list(rownames(X), rownames(X)))
+  # Regular pairs just counts number of times clustered together
   pairs <- matrix(0, nrow = n, ncol = n, dimnames = list(rownames(X), rownames(X)))
   for (i in 1:n) {
     for (j in 1:n) {
@@ -98,18 +102,78 @@ consClustering <- function(X, K, func, nrs, ...){
       
       # If neither of them appeared in iter together
       if(denom == 0) denom <- 1
-      pairs[i,j] <- aggr/ denom
+      
+      pairs[i,j] <- aggr
+      norm_pairs[i,j] <- aggr/ denom
     }
   }
   
-  dist <- as.dist(1-pairs)
+  # Clustering consensus matrix
+  dist <- as.dist(1-norm_pairs)
   hier.out <- hclust(dist, method = "ward.D2")
   hier.clust <- cutree(hier.out, k = K)
+  # normalized matrix reordered
+  reorder.npairs <- norm_pairs[order(hier.clust), order(hier.clust)]
+  # regular, counting matrix reordered
   reorder.pairs <- pairs[order(hier.clust), order(hier.clust)]
-  return(list(cons.mat = reorder.pairs,
-              clusterings = hier.clust))
+  
+  return(list(norm.mat = reorder.npairs,
+              clusterings = hier.clust,
+              count.mat = reorder.pairs))
 }
 
-# 
-# genBiPCPlot(dataset, out$clusterings)
-# clustheatmap(out$cons.mat)
+computeClustCons <- function(clusters, cons.mat){
+  num_clust <- unique(clusters) %>% length()
+  consensus_metrics <- rep(0, num_clust)
+  for(i in 1:num_clust){
+    clust_names <- names(clusters)[which(clusters == i)] # names of obs in current cluster
+    mat_idxs <- which(colnames(cons.mat) %in% clust_names) # matrix indeces of current 
+    clust.mat <- cons.mat[mat_idxs, mat_idxs]
+    # Grabbing upper-triangle entries, excluding diagonal
+    up.t <- clust.mat[upper.tri(clust.mat, diag = FALSE)]
+    if(length(up.t) <= 1){
+      View(up.t)
+      consensus_metrics[i] <- 0
+    }else{
+      consensus_metrics[i] <- mean(up.t)
+    }
+  }
+
+    
+  return(ggplot() + 
+           geom_bar(mapping = aes(x = as.factor(1:num_clust),
+                                  y = consensus_metrics),
+                    fill = "steelblue",
+                    stat = "identity") +
+           theme_light() +
+           labs(y = "Cluster Consensus", x = "Cluster Number", 
+                  title = "Cluster Consensus For Each Cluster Grouping")) 
+}
+
+computeItemCons <- function(clusters, cons.mat){
+  obs_names <- colnames(cons.mat)
+  item_cons <- rep(0, length(obs_names))
+  
+  num_clust <- unique(clusters) %>% length()
+  for(i in 1:num_clust){
+    clust_names <- names(clusters)[which(clusters == i)] # names of obs in current cluster
+    mat_idxs <- which(colnames(cons.mat) %in% clust_names) # matrix indeces of current 
+    clust.mat <- cons.mat[mat_idxs, mat_idxs]
+    
+    if(length(clust.mat) <=1){
+      item_cons[which(obs_names %in% clust_names)] <- 0
+    }else{
+      # zeroing matrix
+      diag(clust.mat) <- 0
+      for(col in 1:ncol(clust.mat)){
+        curr_name <- colnames(clust.mat)[col]
+        curr_mean <- clust.mat[,col] %>% mean()
+        item_cons[which(obs_names == curr_name)] <- curr_mean
+      }
+    }
+  }
+  
+  out.df <- data.frame(Songs = obs_names,
+                       Item_Consensus = item_cons)
+  return(out.df[order(out.df$Item_Consensus, decreasing = TRUE),])
+}
