@@ -132,7 +132,6 @@ computeClustCons <- function(clusters, cons.mat){
     # Grabbing upper-triangle entries, excluding diagonal
     up.t <- clust.mat[upper.tri(clust.mat, diag = FALSE)]
     if(length(up.t) <= 1){
-      View(up.t)
       consensus_metrics[i] <- 0
     }else{
       consensus_metrics[i] <- mean(up.t)

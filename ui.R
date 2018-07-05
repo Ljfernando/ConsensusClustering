@@ -131,7 +131,6 @@ shinyUI(
                    selected = "euclidean")
      ),
      
-     # Show a plot of the generated distribution
      mainPanel(
        tabsetPanel(type = "tabs",
                    tabPanel("PCA",         
@@ -171,7 +170,6 @@ shinyUI(
                  value = 10,
                  step = 2)),
      
-     # Show a plot of the generated distribution
      mainPanel(
          tabsetPanel(type = "tabs",
               tabPanel("PCA",         
