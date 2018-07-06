@@ -51,11 +51,12 @@ shinyServer(function(input, output) {
       d3heatmap(dendrogram = 'none', colors = "Blues")
     
     # Cluster consensus plot
-    method$cc <- computeClustCons(clust_out$clustering, clust_out$count.mat)
+    method$cc <- computeClustCons(clust_out$clustering, clust_out$norm.mat)
     
     # Item consensus plot
-    method$ic <- computeItemCons(clust_out$clustering, clust_out$count.mat)
+    method$ic <- computeItemCons(clust_out$clustering, clust_out$norm.mat)
     
+    method$cd <- computeDistribution(clust_out$norm.mat)
   })
 
   output$kmeans_pca <- renderPlot({
@@ -74,6 +75,10 @@ shinyServer(function(input, output) {
     method$ic
   }, options = list(pageLength = 10))
   
+  output$kmeans_cd <- renderPlot({
+    method$cd
+  })
+  
   output$hier_pca <- renderPlot({
     method$pc
   })
@@ -90,6 +95,9 @@ shinyServer(function(input, output) {
     method$ic
   }, options = list(pageLength = 10))
   
+  output$hier_cd <- renderPlot({
+    method$cd
+  })
   
   
   output$kmed_pca <- renderPlot({
@@ -108,6 +116,9 @@ shinyServer(function(input, output) {
     method$ic
   }, options = list(pageLength = 10))
   
+  output$kmed_cd <- renderPlot({
+    method$cd
+  })
   
   output$spec_pca <- renderPlot({
     method$pc
@@ -124,6 +135,10 @@ shinyServer(function(input, output) {
   output$spec_ic <- renderDataTable({
     method$ic
   }, options = list(pageLength = 10))
+  
+  output$spec_cd <- renderPlot({
+    method$cd
+  })
   
   
 })

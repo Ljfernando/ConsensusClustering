@@ -48,7 +48,9 @@ shinyUI(
                     tabPanel(title = "ClusterCons",
                              plotOutput("kmeans_cc", height = "500px")),
                     tabPanel(title = "ItemCons", 
-                             dataTableOutput("kmeans_ic"))
+                             dataTableOutput("kmeans_ic")),
+                    tabPanel(title = "Distribution",
+                             plotOutput("kmeans_cd", height = "500px"))
                     
         )
       )
@@ -99,7 +101,10 @@ shinyUI(
                    tabPanel(title = "ClusterCons",
                             plotOutput("hier_cc", height = "500px")),
                    tabPanel(title = "ItemCons", 
-                            dataTableOutput("hier_ic"))
+                            dataTableOutput("hier_ic")),
+                   tabPanel(title = "Distribution",
+                            plotOutput("hier_cd", height = "500px"))
+                   
        )
      )
    )
@@ -144,7 +149,10 @@ shinyUI(
                    tabPanel(title = "ClusterCons",
                             plotOutput("kmed_cc", height = "500px")),
                    tabPanel(title = "ItemCons", 
-                            dataTableOutput("kmed_ic"))
+                            dataTableOutput("kmed_ic")),
+                   tabPanel(title = "Distribution",
+                            plotOutput("kmed_cd", height = "500px"))
+                   
        )
      )
    )
@@ -183,7 +191,10 @@ shinyUI(
               tabPanel(title = "ClusterCons",
                        plotOutput("spec_cc", height = "500px")),
               tabPanel(title = "ItemCons", 
-                       dataTableOutput("spec_ic"))
+                       dataTableOutput("spec_ic")),
+              tabPanel(title = "Distribution",
+                       plotOutput("spec_cd", height = "500px"))
+              
        )
      )
    )

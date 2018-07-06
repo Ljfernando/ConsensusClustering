@@ -176,3 +176,15 @@ computeItemCons <- function(clusters, cons.mat){
                        Item_Consensus = item_cons)
   return(out.df[order(out.df$Item_Consensus, decreasing = TRUE),])
 }
+
+computeDistribution <- function(cons.mat){
+  upper_t <- cons.mat[upper.tri(cons.mat, diag = FALSE)] %>% unlist()
+  return(ggplot() + 
+           geom_density(mapping=aes(upper_t), fill = "steelblue") + 
+           theme_light() + 
+           labs(x = "Consensus Index Value", y = "Density", 
+                title = "Consensus Distribution")) 
+}
+
+
+
